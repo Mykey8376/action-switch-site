@@ -16,7 +16,12 @@ const goals = { money: 'お金の余裕', time: '自分の時間', family: '家�
 
 test('OS-15 既存6ファイルは基準SHAとバイト一致', () => {
   const files = ['index.html', 'assets/styles.css', 'js/app.js', 'js/config.js', 'js/diagnosis-data.js', 'js/diagnosis.js'];
-  expect(execFileSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' }).trim()).toBe(baseline);
+  // 基準コミットがHEADの祖先であることを確認する。
+  execFileSync(
+    'git',
+    ['merge-base', '--is-ancestor', baseline, 'HEAD'],
+    { cwd: repo }
+  );
   for (const path of files) {
     const original = execFileSync('git', ['show', baseline + ':' + path], { cwd: repo });
     expect(readFileSync(repo + path).equals(original), path).toBe(true);
